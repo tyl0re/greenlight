@@ -55,7 +55,14 @@ module Joiner
       # Determine if the user needs to join as a moderator.
 # https://github.com/bigbluebutton/greenlight/issues/1682
 #      opts[:user_is_moderator] = @room.owned_by?(current_user) || room_setting_with_config("joinModerator") || @shared_room
-      opts[:user_is_moderator] = @room.owned_by?(current_user) || room_setting_with_config("joinModerator") || current_user.role.get_permission("can_create_rooms")
+#      opts[:user_is_moderator] = @room.owned_by?(current_user) || room_setting_with_config("joinModerator") || current_user.role.get_permission("can_create_rooms")
+      user_has_permissions = false
+      if current_user
+        if current_user.role
+          user_has_permissions = current_user.role.get_permission("can_create_rooms")
+        end
+      end
+      opts[:user_is_moderator] = @room.owned_by?(current_user) || room_setting_with_config("joinModerator") || user_has_permissions
       opts[:record] = record_meeting
       opts[:require_moderator_approval] = room_setting_with_config("requireModeratorApproval")
       opts[:mute_on_start] = room_setting_with_config("muteOnStart")
